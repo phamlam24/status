@@ -4,6 +4,8 @@ See [`../CLAUDE.md`](../CLAUDE.md) for cross-app architecture (including the ver
 
 Worktrees are allowed (see `../CLAUDE.md`'s Git workflow section) — edit directly in this checkout for most changes, use one when isolation actually helps.
 
+**Versioning is commit-message-driven, not manual** — prefix a commit with `(patch)`/`(minor)`/`(major)` to have CI bump `package.json` accordingly on push; no prefix means no version change. See `../CLAUDE.md`'s Versioning section for the policy and `.github/workflows/deploy.yml`'s "Bump version from commit message prefix" step for the mechanism.
+
 ## What this is
 
 Public uptime status page for every app in the `*.lampham.space` suite, plus their version and last-commit info. Built with **Astro (SSR, server output)** + Tailwind CSS v4 + Catppuccin Macchiato, matching the other apps' look. No Preact islands (no interactivity needed), but it **does** carry the shared auth pattern now — see "Login-gated visibility" below.
