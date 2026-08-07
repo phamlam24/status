@@ -29,7 +29,7 @@ jobs:
             cd /var/www/status.lampham.space &&
             git fetch origin main &&
             git reset --hard origin/main &&
-            printf 'DATABASE_URL=%s\n' '${{ secrets.DATABASE_URL }}' > .env &&
+            printf 'DATABASE_URL=%s\nJWT_SECRET=%s\nGITHUB_TOKEN=%s\n' '${{ secrets.DATABASE_URL }}' '${{ secrets.JWT_SECRET }}' '${{ secrets.GH_API_TOKEN }}' > .env &&
             npm ci &&
             npm run migrate &&
             npm run build &&

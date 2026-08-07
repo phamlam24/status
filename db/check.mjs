@@ -1,12 +1,13 @@
 import 'dotenv/config';
 import { pool } from './client.mjs';
 
+// Keep in sync with src/lib/apps.ts's MONITORED_APPS (name + url).
 const APPS = [
   { name: 'home', url: 'https://lampham.space' },
-  { name: 'climbing', url: 'https://climbing.lampham.space' },
-  { name: 'auth', url: 'https://auth.lampham.space' },
+  { name: 'climb', url: 'https://climbing.lampham.space' },
   { name: 'learn', url: 'https://learn.lampham.space' },
   { name: 'sprout', url: 'https://sprout.lampham.space' },
+  { name: 'auth', url: 'https://auth.lampham.space' },
   { name: 'status', url: 'https://status.lampham.space' },
 ];
 

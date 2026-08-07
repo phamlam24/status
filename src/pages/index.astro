@@ -1,54 +1,78 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Footer from '../components/Footer.astro';
+import AppCard from '../components/AppCard.astro';
 import { MONITORED_APPS } from '../lib/apps';
 import { getAllAppStatuses } from '../lib/db/checks';
+import { getAllAppMeta } from '../lib/db/meta';
+import { isLoggedIn } from '../lib/auth';
+import { AUTH_ORIGIN } from '../lib/authOrigin';
 
-const statuses = await getAllAppStatuses(MONITORED_APPS.map((a) => a.name));
+const [statuses, metaByName, loggedIn] = await Promise.all([
+  getAllAppStatuses(MONITORED_APPS.map((a) => a.name)),
+  getAllAppMeta(),
+  isLoggedIn(Astro.request, Astro.cookies),
+]);
 const statusByName = new Map(statuses.map((s) => [s.name, s]));
 
-function dotClass(isUp: boolean | null) {
-  if (isUp === null) return 'dot--unknown';
-  return isUp ? 'dot--up' : 'dot--down';
-}
+const authUp = statusByName.get('auth')?.isUp === true;
+const canSeePrivate = loggedIn && authUp;
+const visibleApps = MONITORED_APPS.filter((a) => a.public || canSeePrivate);
+const hiddenCount = MONITORED_APPS.length - visibleApps.length;
+
+const apps = visibleApps.filter((a) => a.kind === 'app');
+const services = visibleApps.filter((a) => a.kind === 'service');
+
+const isLocalhost = Astro.url.hostname === 'localhost' || Astro.url.hostname === '127.0.0.1';
+const redirect = encodeURIComponent(Astro.url.href);
+const loginUrl = `${AUTH_ORIGIN}/login?redirect=${redirect}`;
+const logoutUrl = `${AUTH_ORIGIN}/logout?redirect=${redirect}`;
 ---
 
 <BaseLayout title="Status | lampham.space">
   <header class="mb-10 pb-6 border-b border-border">
-    <h1 class="text-2xl font-bold tracking-tight text-text">status.lampham.space</h1>
-    <p class="mt-1 text-sm text-muted">Uptime for every app in the *.lampham.space suite, checked every 5 minutes.</p>
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-text">status.lampham.space</h1>
+        <p class="mt-1 text-sm text-muted">Uptime for the *.lampham.space suite, checked every 5 minutes.</p>
+      </div>
+      {!isLocalhost && (
+        <a
+          href={loggedIn ? logoutUrl : loginUrl}
+          class="text-xs font-medium text-muted hover:text-accent-h transition-colors mt-1"
+        >
+          {loggedIn ? 'Log out' : 'Log in'}
+        </a>
+      )}
+    </div>
+    {hiddenCount > 0 && (
+      <p class="mt-3 text-xs text-overlay">
+        {hiddenCount} internal {hiddenCount === 1 ? 'entry is' : 'entries are'} hidden{!authUp ? ' (auth is down)' : ''}.
+      </p>
+    )}
   </header>
 
-  <div class="flex flex-col gap-4">
-    {MONITORED_APPS.map((app) => {
-      const s = statusByName.get(app.name)!;
-      return (
-        <div class="rounded-lg border border-border bg-surface px-5 py-4">
-          <div class="flex items-center justify-between gap-3 flex-wrap">
-            <div class="flex items-center gap-2">
-              <span class={`dot ${dotClass(s.isUp)}`} />
-              <a href={app.url} class="font-semibold text-text hover:text-accent-h transition-colors">
-                {app.label}
-              </a>
-            </div>
-            <div class="text-xs text-muted font-mono">
-              {s.isUp === null && 'no data yet'}
-              {s.isUp === true && `up${s.latencyMs != null ? ` · ${s.latencyMs}ms` : ''}`}
-              {s.isUp === false && 'down'}
-              {s.uptime24h != null && ` · ${s.uptime24h}% (24h)`}
-            </div>
-          </div>
-          {s.history.length > 0 && (
-            <div class="mt-3 flex gap-1 flex-wrap">
-              {s.history.map((up) => (
-                <span class={`dot ${up ? 'dot--up' : 'dot--down'}`} />
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    })}
-  </div>
+  {apps.length > 0 && (
+    <section class="mb-8">
+      <h2 class="text-xs font-bold uppercase tracking-widest text-muted mb-3">Apps</h2>
+      <div class="flex flex-col gap-4">
+        {apps.map((app) => (
+          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {services.length > 0 && (
+    <section>
+      <h2 class="text-xs font-bold uppercase tracking-widest text-muted mb-3">Services</h2>
+      <div class="flex flex-col gap-4">
+        {services.map((app) => (
+          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} />
+        ))}
+      </div>
+    </section>
+  )}
 
   <Footer />
 </BaseLayout>

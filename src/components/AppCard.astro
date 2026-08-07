@@ -1,0 +1,59 @@
+---
+import type { MonitoredApp } from '../lib/apps';
+import type { AppStatus } from '../lib/db/checks';
+import type { AppMeta } from '../lib/db/meta';
+
+interface Props {
+  app: MonitoredApp;
+  status: AppStatus;
+  meta?: AppMeta;
+}
+
+const { app, status: s, meta } = Astro.props;
+
+function dotClass(isUp: boolean | null) {
+  if (isUp === null) return 'dot--unknown';
+  return isUp ? 'dot--up' : 'dot--down';
+}
+
+function timeAgo(iso: string | null) {
+  if (!iso) return null;
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+---
+
+<div class="rounded-lg border border-border bg-surface px-5 py-4">
+  <div class="flex items-center justify-between gap-3 flex-wrap">
+    <div class="flex items-center gap-2">
+      <span class={`dot ${dotClass(s.isUp)}`} />
+      <a href={app.url} class="font-semibold text-text hover:text-accent-h transition-colors">
+        {app.name}
+      </a>
+      {meta?.version && <span class="text-xs text-overlay font-mono">v{meta.version}</span>}
+    </div>
+    <div class="text-xs text-muted font-mono">
+      {s.isUp === null && 'no data yet'}
+      {s.isUp === true && `up${s.latencyMs != null ? ` · ${s.latencyMs}ms` : ''}`}
+      {s.isUp === false && 'down'}
+      {s.uptime24h != null && ` · ${s.uptime24h}% (24h)`}
+    </div>
+  </div>
+  {s.history.length > 0 && (
+    <div class="mt-3 flex gap-1 flex-wrap">
+      {s.history.map((up) => (
+        <span class={`dot ${up ? 'dot--up' : 'dot--down'}`} />
+      ))}
+    </div>
+  )}
+  {meta?.lastCommitAt && (
+    <p class="mt-2 text-[0.68rem] text-overlay">
+      last commit {timeAgo(meta.lastCommitAt)} ({meta.lastCommitSha})
+    </p>
+  )}
+</div>
