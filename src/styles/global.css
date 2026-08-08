@@ -21,6 +21,7 @@
   --color-accent:   var(--color-ctp-green);      /* #a6da95 — up / primary accent */
   --color-accent-h: var(--color-ctp-teal);       /* #8bd5ca — hover / secondary */
   --color-danger:   var(--color-ctp-red);        /* #ed8796 — down */
+  --color-warning:  var(--color-ctp-yellow);     /* #eed49f — degraded (1 failed check in a bucket) */
 
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
@@ -61,6 +62,9 @@
 }
 .dot--down {
   background: var(--color-danger);
+}
+.dot--degraded {
+  background: var(--color-warning);
 }
 .dot--unknown {
   background: var(--color-surface2);

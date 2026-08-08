@@ -1,19 +1,34 @@
 ---
 import type { MonitoredApp } from '../lib/apps';
-import type { AppStatus } from '../lib/db/checks';
+import type { AppStatus, HistoryBucket, HistoryDotStatus } from '../lib/db/checks';
 import type { AppMeta } from '../lib/db/meta';
 
 interface Props {
   app: MonitoredApp;
   status: AppStatus;
   meta?: AppMeta;
+  loggedIn?: boolean;
 }
 
-const { app, status: s, meta } = Astro.props;
+const { app, status: s, meta, loggedIn = false } = Astro.props;
 
 function dotClass(isUp: boolean | null) {
   if (isUp === null) return 'dot--unknown';
   return isUp ? 'dot--up' : 'dot--down';
+}
+
+function historyDotClass(status: HistoryDotStatus) {
+  if (status === null) return 'dot--unknown';
+  return `dot--${status}`;
+}
+
+// Logged-in only: hover tooltip listing each failed check in the bucket
+// (timestamp + reason, e.g. "HTTP 502" or "timeout (5s)").
+function failureTooltip(bucket: HistoryBucket) {
+  if (!loggedIn || bucket.failures.length === 0) return undefined;
+  return bucket.failures
+    .map((f) => `${new Date(f.checkedAt).toLocaleTimeString()} — ${f.reason ?? 'unknown error'}`)
+    .join('\n');
 }
 
 function timeAgo(iso: string | null) {
@@ -46,8 +61,8 @@ function timeAgo(iso: string | null) {
   </div>
   {s.history.length > 0 && (
     <div class="mt-3 flex gap-1 flex-wrap">
-      {s.history.map((up) => (
-        <span class={`dot ${up ? 'dot--up' : 'dot--down'}`} />
+      {s.history.map((bucket) => (
+        <span class={`dot ${historyDotClass(bucket.status)}`} title={failureTooltip(bucket)} />
       ))}
     </div>
   )}

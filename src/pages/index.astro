@@ -57,7 +57,7 @@ const logoutUrl = `${AUTH_ORIGIN}/logout?redirect=${redirect}`;
       <h2 class="text-xs font-bold uppercase tracking-widest text-muted mb-3">Apps</h2>
       <div class="flex flex-col gap-4">
         {apps.map((app) => (
-          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} />
+          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} loggedIn={loggedIn} />
         ))}
       </div>
     </section>
@@ -68,7 +68,7 @@ const logoutUrl = `${AUTH_ORIGIN}/logout?redirect=${redirect}`;
       <h2 class="text-xs font-bold uppercase tracking-widest text-muted mb-3">Services</h2>
       <div class="flex flex-col gap-4">
         {services.map((app) => (
-          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} />
+          <AppCard app={app} status={statusByName.get(app.name)!} meta={metaByName.get(app.name)} loggedIn={loggedIn} />
         ))}
       </div>
     </section>

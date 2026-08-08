@@ -21,9 +21,11 @@ async function checkApp({ name, url }) {
     // Anything under 500 (2xx, or a 302 from a login gate) means the process
     // is alive and responding correctly — that's what "up" means here, not
     // "this specific page is publicly viewable."
-    return { name, isUp: res.status < 500, latencyMs };
-  } catch {
-    return { name, isUp: false, latencyMs: null };
+    const isUp = res.status < 500;
+    return { name, isUp, latencyMs, failReason: isUp ? null : `HTTP ${res.status}` };
+  } catch (err) {
+    const failReason = err.name === 'TimeoutError' ? 'timeout (5s)' : err.message;
+    return { name, isUp: false, latencyMs: null, failReason };
   }
 }
 
@@ -31,10 +33,10 @@ async function main() {
   const results = await Promise.all(APPS.map(checkApp));
   for (const r of results) {
     await pool.query(
-      'INSERT INTO status.checks (app_name, is_up, latency_ms) VALUES ($1, $2, $3)',
-      [r.name, r.isUp, r.latencyMs]
+      'INSERT INTO status.checks (app_name, is_up, latency_ms, fail_reason) VALUES ($1, $2, $3, $4)',
+      [r.name, r.isUp, r.latencyMs, r.failReason]
     );
-    console.log(`${r.name}: ${r.isUp ? 'up' : 'down'}${r.latencyMs != null ? ` (${r.latencyMs}ms)` : ''}`);
+    console.log(`${r.name}: ${r.isUp ? 'up' : 'down'}${r.latencyMs != null ? ` (${r.latencyMs}ms)` : ''}${r.failReason ? ` — ${r.failReason}` : ''}`);
   }
   await pool.end();
 }
