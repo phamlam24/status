@@ -16,7 +16,7 @@ This app has **three separate runtime pieces**, not just the web server:
 
 1. **The web app** (`status.service`) — serves `src/pages/index.astro`, which reads the latest rows out of `status.checks`/`status.app_meta` per app and renders them. It never makes outbound requests itself.
 2. **The uptime checker** (`db/check.mjs`, run by `status-check.timer` every 5 minutes) — a plain Node script (not part of the Astro build) that `fetch()`es each monitored app's public URL with a 15s timeout and `redirect: 'manual'`, and inserts one row per app into `status.checks`. `redirect: 'manual'` matters: a login-gated app (`learn`, `sprout`) returns a 302 to `auth.lampham.space` on an anonymous GET, and following that redirect would end up checking `auth`'s status instead of the app's own. Any response under 500 (including that 302) counts as "up" — the check is "is this app's process alive and responding correctly," not "is this specific page public."
-3. **The version/commit checker** (`db/check-meta.mjs`, run by `status-meta.timer` hourly — much less frequent than uptime since this changes rarely) — for each app, hits the GitHub API for its latest commit on `main` and fetches `package.json` off `raw.githubusercontent.com` for its `version`, upserting into `status.app_meta`. **Requires `GITHUB_TOKEN`** (a fine-grained PAT with read-only Contents access) for `learn`/`sprout`/`server-auth` specifically — those three repos are private, so unauthenticated GitHub API calls 404 on them (this bit us once while building it: looked like a rate limit, was actually just no auth). `climbing-tracker`/`home`/`status` are public and work without a token, but the token is applied to every request uniformly since it's harmless for public repos too.
+3. **The version/commit checker** (`db/check-meta.mjs`, run by `status-meta.timer` hourly — much less frequent than uptime since this changes rarely) — for each app, hits the GitHub API for its latest commit on `main` and fetches `package.json` off `raw.githubusercontent.com` for its `version`, upserting into `status.app_meta`. **Requires `GITHUB_TOKEN`** (a fine-grained PAT with read-only Contents access) for `learn`/`sprout`/`server-auth` specifically — those three repos are private, so unauthenticated GitHub API calls 404 on them (this bit us once while building it: looked like a rate limit, was actually just no auth). `climbing-tracker`/`home`/`status` are public and work without a token, but the token is applied to every request uniformly since it's harmless for public repos too. Since a compare-then-upsert needs the *previous* row, this runs the read + upsert + event emit for each app inside one transaction (`db/events.mjs`'s `emitEvent()`) — see "Cross-app events" below.
 
 The monitored-apps list is duplicated in **three** places and must be kept in sync manually: `db/check.mjs`'s `APPS` array, `db/check-meta.mjs`'s `APPS` array (both plain `.mjs`, run standalone), and `src/lib/apps.ts`'s `MONITORED_APPS` (used by the page). Not shared because the two checker scripts aren't part of the Astro/Vite build.
 
@@ -25,6 +25,10 @@ The monitored-apps list is duplicated in **three** places and must be kept in sy
 Unlike the uptime/version data (always collected), **not every monitored entry is shown to an anonymous visitor**. Each entry in `MONITORED_APPS` has a `public: boolean`. `home`/`climb`/`status` are public; `learn`/`sprout`/`auth` are not — they're hidden from the page entirely unless the viewer is logged in *and* `auth` itself is currently reporting up (checked against the just-fetched `status.checks` data for `app_name = 'auth'`). That second condition is deliberate: don't show internal infra to an anonymous visitor based on a session that might not even be verifiable right now.
 
 This reuses the exact same local-JWT-verification pattern as every other app (`src/lib/verifyAccessToken.ts`, `src/lib/authOrigin.ts`, `src/lib/auth.ts`'s `isLoggedIn()`, `src/middleware.ts` for silent token refresh) — copied from `home`'s implementation since the "gate visibility, not the whole page" shape matches. This is the one thing that changed status from "no auth code at all" to "same auth wiring as everything else" — needs `JWT_SECRET` now, must match the other apps'.
+
+## Cross-app events
+
+`check-meta.mjs` emits `status.app_updated` (see [`../docs/EVENTS.md`](../docs/EVENTS.md)) whenever an app's `version` or `last_commit_sha` differs from the row already in `status.app_meta` — i.e. this is how the suite detects "a push/deploy landed" without any app having to call out to another. Doesn't fire on an app's very first check (no prior row to diff against). `db/events.mjs` is the `emitEvent(client, type, payload)` helper (same shape as `climbing-tracker/src/lib/events.ts`, duplicated rather than shared per root `CLAUDE.md`), called with the same client as the `status.app_meta` upsert so both commit together. This lets e.g. a `sprout` quest link to "any app updated" via `linked_event_type = 'status.app_updated'`.
 
 ## Data model (schema `status`)
 
@@ -38,7 +42,9 @@ db/
   client.mjs / migrate.mjs / migrations/     # same tiny hand-rolled runner as every app,
                                                # migration ids prefixed "status/"
   check.mjs                                    # uptime checker, every 5 min — see "How checks work"
-  check-meta.mjs                                # version/commit checker, hourly — needs GITHUB_TOKEN
+  check-meta.mjs                                # version/commit checker, hourly — needs GITHUB_TOKEN,
+                                                   # emits status.app_updated on change (see "Cross-app events")
+  events.mjs                                     # emitEvent(client, type, payload) — see ../docs/EVENTS.md
 
 src/
   lib/
