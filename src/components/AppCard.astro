@@ -23,7 +23,7 @@ function historyDotClass(status: HistoryDotStatus) {
 }
 
 // Logged-in only: hover tooltip listing each failed check in the bucket
-// (timestamp + reason, e.g. "HTTP 502" or "timeout (5s)").
+// (timestamp + reason, e.g. "HTTP 502" or "timeout (15s)").
 function failureTooltip(bucket: HistoryBucket) {
   if (!loggedIn || bucket.failures.length === 0) return undefined;
   return bucket.failures

@@ -16,7 +16,7 @@ async function checkApp({ name, url }) {
   try {
     // redirect: 'manual' so a login-gated app's 302 to auth.lampham.space
     // is reported as that app's own status, not followed into auth's.
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000), redirect: 'manual' });
+    const res = await fetch(url, { signal: AbortSignal.timeout(15000), redirect: 'manual' });
     const latencyMs = Date.now() - start;
     // Anything under 500 (2xx, or a 302 from a login gate) means the process
     // is alive and responding correctly — that's what "up" means here, not
@@ -24,7 +24,7 @@ async function checkApp({ name, url }) {
     const isUp = res.status < 500;
     return { name, isUp, latencyMs, failReason: isUp ? null : `HTTP ${res.status}` };
   } catch (err) {
-    const failReason = err.name === 'TimeoutError' ? 'timeout (5s)' : err.message;
+    const failReason = err.name === 'TimeoutError' ? 'timeout (15s)' : err.message;
     return { name, isUp: false, latencyMs: null, failReason };
   }
 }
