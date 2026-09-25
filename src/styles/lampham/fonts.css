@@ -4,9 +4,8 @@
   renders (Vietnamese glyphs cost nothing on an English-only page), and a
   family that's never used on a page (e.g. mono on status) isn't fetched.
 
-  Budget (latin, woff2): Inter 48KB, Bricolage opsz 77KB, JetBrains Mono 40KB.
-  To trade Bricolage's size-adaptive shapes for ~36KB, swap opsz.css → wght.css.
+  Budget (latin, woff2): Inter 48KB, Space Grotesk 22KB, JetBrains Mono 40KB.
 */
 @import '@fontsource-variable/inter/wght.css';
-@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import '@fontsource-variable/space-grotesk/wght.css';
 @import '@fontsource-variable/jetbrains-mono/wght.css';

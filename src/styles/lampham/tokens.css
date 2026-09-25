@@ -76,7 +76,7 @@
      Every family covers Latin + Vietnamese; the trailing system/Noto
      fallbacks catch any other script (CJK, Thai, …) without shipping it. */
   --font-sans:    'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', 'Noto Sans', sans-serif;
-  --font-display: 'Bricolage Grotesque Variable', 'Inter Variable', system-ui, 'Noto Sans', sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Inter Variable', system-ui, 'Noto Sans', sans-serif;
   --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, 'Noto Sans Mono', monospace;
 
   /* ── Shape: "soft" ───────────────────────────────────────────────────── */
