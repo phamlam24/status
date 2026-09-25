@@ -1,0 +1,232 @@
+/*
+  Suite primitives — plain CSS classes (lp-*) so they work the same in Astro,
+  Svelte, or server-rendered HTML. Compose with Tailwind utilities for layout;
+  utilities win over these since they're in a later layer.
+*/
+
+@layer components {
+  /* ── Surfaces ──────────────────────────────────────────────────────── */
+  .lp-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+    padding: 1rem 1.25rem;
+  }
+  .lp-card-link {
+    transition:
+      border-color var(--duration-base) var(--ease-soft),
+      transform var(--duration-base) var(--ease-soft);
+  }
+  .lp-card-link:hover {
+    border-color: color-mix(in oklab, var(--color-accent) 45%, var(--color-border));
+    transform: translateY(-1px);
+  }
+
+  /* ── Type helpers ──────────────────────────────────────────────────── */
+  .lp-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .lp-num { font-variant-numeric: tabular-nums; }
+
+  /* Dense variant for data-heavy views (tables, status grids). */
+  .lp-compact { font-size: 0.875rem; line-height: 1.5; }
+
+  /* ── Controls ──────────────────────────────────────────────────────── */
+  .lp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast) var(--ease-soft),
+      border-color var(--duration-fast) var(--ease-soft),
+      color var(--duration-fast) var(--ease-soft),
+      transform var(--duration-fast) var(--ease-soft);
+  }
+  .lp-btn:hover { text-decoration: none; }
+  .lp-btn:active { transform: scale(0.97); }
+  .lp-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .lp-btn-primary { background: var(--color-accent); color: var(--color-on-accent); }
+  .lp-btn-primary:hover { background: var(--color-accent-h); color: var(--color-on-accent); }
+
+  .lp-btn-ghost { background: transparent; border-color: var(--color-border-strong); color: var(--color-text); }
+  .lp-btn-ghost:hover { background: var(--color-surface2); color: var(--color-text); }
+
+  .lp-btn-danger { background: transparent; border-color: color-mix(in oklab, var(--color-danger) 50%, transparent); color: var(--color-danger); }
+  .lp-btn-danger:hover { background: color-mix(in oklab, var(--color-danger) 14%, transparent); color: var(--color-danger); }
+
+  .lp-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: var(--color-mantle);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-control);
+    color: var(--color-text);
+    font: inherit;
+    transition: border-color var(--duration-fast) var(--ease-soft);
+  }
+  .lp-input::placeholder { color: var(--color-overlay); }
+  .lp-input:focus { outline: none; border-color: var(--color-accent); }
+
+  .lp-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: var(--color-surface2);
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Status dots (reserved meaning colours) ────────────────────────── */
+  .lp-dot {
+    display: inline-block;
+    flex: none;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    color: var(--color-surface3);
+    background: currentColor;
+  }
+  .lp-dot-up      { color: var(--color-success); }
+  .lp-dot-warn    { color: var(--color-warn); }
+  .lp-dot-down    { color: var(--color-danger); }
+  .lp-dot-accent  { color: var(--color-accent); }
+  .lp-dot-pulse   { animation: lp-pulse 2.4s var(--ease-soft) infinite; }
+
+  /* ── Suite bar (every app except the portfolio) ────────────────────── */
+  .lp-suitebar {
+    background: var(--color-crust);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+  }
+  .lp-suitebar-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 3rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  .lp-suitebar a { color: var(--color-muted); }
+  .lp-suitebar a:hover { color: var(--color-text); text-decoration: none; }
+
+  .lp-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--color-text) !important;
+  }
+  .lp-wordmark svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-brand);
+    transition: transform var(--duration-slow) var(--ease-spring);
+  }
+  .lp-wordmark:hover svg { transform: rotate(45deg) scale(1.1); }
+
+  .lp-crumb-sep { color: var(--color-border-strong); user-select: none; }
+  .lp-crumb-app {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    color: var(--color-text) !important;
+  }
+
+  .lp-suitebar-end { margin-left: auto; display: flex; align-items: center; gap: 0.25rem; }
+  .lp-bar-btn {
+    padding: 0.3rem 0.6rem;
+    border: 0;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-soft), color var(--duration-fast) var(--ease-soft);
+  }
+  .lp-bar-btn:hover { background: var(--color-surface2); color: var(--color-text); }
+
+  /* App switcher: native popover (light-dismiss + Esc, no JS). Anchored
+     under its button where CSS anchor positioning is supported, otherwise
+     pinned to the viewport's top-right. */
+  .lp-switcher {
+    position: fixed;
+    inset: 3.25rem 1rem auto auto;
+    margin: 0;
+    min-width: 13rem;
+    padding: 0.35rem;
+    background: var(--color-base);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-card);
+    color: var(--color-text);
+    box-shadow: 0 12px 32px -8px rgb(0 0 0 / 0.5);
+  }
+  @supports (position-anchor: --a) {
+    .lp-switcher-trigger { anchor-name: --lp-switcher; }
+    .lp-switcher {
+      position-anchor: --lp-switcher;
+      inset: auto;
+      top: calc(anchor(bottom) + 0.5rem);
+      right: anchor(right);
+    }
+  }
+  .lp-switcher:popover-open { animation: lp-pop var(--duration-base) var(--ease-soft); }
+  .lp-switcher a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--radius-control);
+    color: var(--color-text);
+  }
+  .lp-switcher a:hover { background: var(--color-surface2); color: var(--color-text); text-decoration: none; }
+  .lp-switcher a[aria-current='page'] { background: var(--color-surface2); }
+  .lp-switcher small { margin-left: auto; color: var(--color-overlay); font-size: 0.72rem; }
+  .lp-switcher hr { margin: 0.35rem 0.25rem; border: 0; border-top: 1px solid var(--color-border); }
+
+  /* ── Suite footer (every app, portfolio included) ──────────────────── */
+  .lp-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem 1.25rem;
+    margin-top: 4rem;
+    padding: 1.5rem 1.5rem 3rem;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-overlay);
+    font-size: 0.8rem;
+  }
+  .lp-footer a { color: var(--color-overlay); }
+  .lp-footer a:hover { color: var(--color-text); text-decoration: none; }
+  .lp-footer a[aria-current='page'] { color: var(--color-muted); }
+}
+
+@keyframes lp-pop {
+  from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+}
+@keyframes lp-pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklab, currentColor 45%, transparent); }
+  70%  { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}

@@ -1,24 +1,33 @@
 ---
 import '../styles/global.css';
+import SuiteHead from '../components/lampham/SuiteHead.astro';
+import SuiteHeader from '../components/lampham/SuiteHeader.astro';
+import SuiteFooter from '../components/lampham/SuiteFooter.astro';
 
 interface Props {
   title?: string;
+  loggedIn?: boolean;
+  /** Login/logout URL for the suite bar; omit to hide it (localhost). */
+  authHref?: string;
 }
 
-const { title = 'Status' } = Astro.props;
+const { title = 'Status', loggedIn = false, authHref } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en" class="macchiato">
+<html lang="en" data-app="status">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <SuiteHead />
   <title>{title}</title>
 </head>
 <body>
-  <div class="max-w-3xl mx-auto px-6 py-10">
+  <SuiteHeader current="status" loggedIn={loggedIn} authHref={authHref} />
+  <main class="flex-1 w-full max-w-3xl mx-auto px-6 pt-12">
     <slot />
-  </div>
+  </main>
+  <SuiteFooter current="status" />
 </body>
 </html>

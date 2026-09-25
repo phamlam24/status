@@ -1,0 +1,27 @@
+---
+/*
+  Suite footer — on every app, portfolio included. Anything passed as
+  children renders first (e.g. an app-specific link).
+*/
+import { HOME_URL, APPS_HUB_URL, GITHUB_URL, type SuiteAppId } from './suite';
+
+interface Props {
+  current?: SuiteAppId;
+}
+
+const { current } = Astro.props;
+const links = [
+  { id: 'home', label: 'home', href: HOME_URL },
+  { id: 'apps', label: 'apps', href: APPS_HUB_URL },
+  { id: 'status', label: 'status', href: 'https://status.lampham.space' },
+  { id: 'github', label: 'github', href: GITHUB_URL },
+];
+---
+
+<footer class="lp-footer">
+  <slot />
+  {links.map((l) => (
+    <a href={l.href} aria-current={l.id === current ? 'page' : undefined}>{l.label}</a>
+  ))}
+  <span>&copy; {new Date().getFullYear()} Lam Pham</span>
+</footer>

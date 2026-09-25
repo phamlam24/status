@@ -1,71 +1,26 @@
 @import "tailwindcss";
-@import "@catppuccin/tailwindcss/macchiato.css";
+/* Suite design system — generated copy, see ./lampham/README.md. Accent
+   (teal) comes from <html data-app="status">. */
+@import "./lampham/index.css";
 
-/*
-  Semantic aliases — map our design vocabulary onto Catppuccin Macchiato tokens.
-  Components use these names (bg-surface, text-muted, etc.) and never reference
-  ctp-* directly, so swapping flavors only requires changing these mappings.
-  Same palette as the other *.lampham.space apps.
-*/
-@theme {
-  --color-base:     var(--color-ctp-base);       /* #24273a — page bg */
-  --color-mantle:   var(--color-ctp-mantle);     /* #1e2030 — deepest bg */
-  --color-crust:    var(--color-ctp-crust);      /* #181926 — borders, lines */
-  --color-surface:  var(--color-ctp-surface0);   /* #363a4f — card bg */
-  --color-surface2: var(--color-ctp-surface1);   /* #494d64 — elevated elements */
-  --color-border:   var(--color-ctp-surface0);   /* same as surface, subtle */
-  --color-text:     var(--color-ctp-text);       /* #cad3f5 — primary text */
-  --color-muted:    var(--color-ctp-subtext1);   /* #b8c0e0 — secondary text */
-  --color-overlay:  var(--color-ctp-overlay1);   /* #8087a2 — placeholder / disabled */
-
-  --color-accent:   var(--color-ctp-green);      /* #a6da95 — up / primary accent */
-  --color-accent-h: var(--color-ctp-teal);       /* #8bd5ca — hover / secondary */
-  --color-danger:   var(--color-ctp-red);        /* #ed8796 — down */
-  --color-warning:  var(--color-ctp-yellow);     /* #eed49f — degraded (1 failed check in a bucket) */
-
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+/* ── Uptime history strip ───────────────────────────────────────── */
+/* One bar per 30-min bucket (oldest → newest), stretched to the card width. */
+.history {
+  display: flex;
+  gap: 2px;
+  height: 1.75rem;
 }
-
-@layer base {
-  *, *::before, *::after { box-sizing: border-box; }
-
-  body {
-    background-color: var(--color-mantle);
-    color: var(--color-text);
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
-  a:hover {
-    color: var(--color-accent-h);
-    text-decoration: underline;
-  }
-}
-
-/* ── Status dots ────────────────────────────────────────────── */
-.dot {
-  display: inline-block;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 999px;
-}
-.dot--up {
-  background: var(--color-accent);
-}
-.dot--down {
-  background: var(--color-danger);
-}
-.dot--degraded {
-  background: var(--color-warning);
-}
-.dot--unknown {
+.history > span {
+  flex: 1;
+  min-width: 2px;
+  border-radius: 2px;
   background: var(--color-surface2);
+  transition: transform var(--duration-fast) var(--ease-soft), filter var(--duration-fast) var(--ease-soft);
 }
+.history > span:hover {
+  transform: scaleY(1.15);
+  filter: brightness(1.2);
+}
+.history > .is-up       { background: color-mix(in oklab, var(--color-success) 75%, var(--color-surface)); }
+.history > .is-degraded { background: var(--color-warn); }
+.history > .is-down     { background: var(--color-danger); }

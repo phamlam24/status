@@ -1,0 +1,61 @@
+---
+/*
+  Suite bar — the slim top strip on every app except the portfolio:
+  lampham mark → current app → app switcher + auth link.
+  Plain HTML/CSS (styles in components.css); the switcher is a native
+  popover, so there's no client JS.
+*/
+import { SUITE_APPS, HOME_URL, APPS_HUB_URL, type SuiteAppId } from './suite';
+
+interface Props {
+  /** This app's id (also its data-app accent key). */
+  current: SuiteAppId;
+  /** Where the app name in the bar links to. Defaults to "/". */
+  appHref?: string;
+  /** Lists private apps in the switcher, and picks Log in vs Log out. */
+  loggedIn?: boolean;
+  /** Login/logout URL. Omit to hide the auth link (e.g. on localhost). */
+  authHref?: string;
+  /** Max width of the bar's content, matching the page's container. */
+  width?: string;
+}
+
+const { current, appHref = '/', loggedIn = false, authHref, width = '48rem' } = Astro.props;
+const apps = SUITE_APPS.filter((a) => a.public || loggedIn);
+const currentApp = SUITE_APPS.find((a) => a.id === current);
+---
+
+<header class="lp-suitebar">
+  <nav class="lp-suitebar-inner" style={`max-width: ${width}`} aria-label="lampham.space">
+    <a href={HOME_URL} class="lp-wordmark">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 1.5c.5 5.6 4.9 10 10.5 10.5-5.6.5-10 4.9-10.5 10.5C11.5 16.9 7.1 12.5 1.5 12 7.1 11.5 11.5 7.1 12 1.5Z" />
+      </svg>
+      lampham
+    </a>
+    <span class="lp-crumb-sep" aria-hidden="true">/</span>
+    <a href={appHref} class="lp-crumb-app">
+      <span class="lp-dot lp-dot-accent" aria-hidden="true"></span>
+      {currentApp?.label ?? current}
+    </a>
+
+    <div class="lp-suitebar-end">
+      <button type="button" class="lp-bar-btn lp-switcher-trigger" popovertarget="lp-switcher" aria-label="Switch app">apps</button>
+      {authHref && (
+        <a href={authHref} class="lp-bar-btn">{loggedIn ? 'Log out' : 'Log in'}</a>
+      )}
+    </div>
+  </nav>
+
+  <div id="lp-switcher" class="lp-switcher" popover>
+    {apps.map((app) => (
+      <a href={app.url} aria-current={app.id === current ? 'page' : undefined}>
+        <span class="lp-dot lp-dot-accent" data-app={app.id} aria-hidden="true"></span>
+        {app.label}
+        <small>{app.blurb}</small>
+      </a>
+    ))}
+    <hr />
+    <a href={APPS_HUB_URL}>all apps →</a>
+  </div>
+</header>

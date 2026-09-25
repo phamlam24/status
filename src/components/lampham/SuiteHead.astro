@@ -1,0 +1,14 @@
+---
+/*
+  Shared <head> bits: colour scheme + preload of the two fonts every page
+  renders above the fold (latin subsets only), so text doesn't flash from
+  fallback → web font on first load. Render inside <head>.
+*/
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import displayLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+---
+
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#181926" />
+<link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
+<link rel="preload" href={displayLatin} as="font" type="font/woff2" crossorigin />
