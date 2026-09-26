@@ -3,12 +3,19 @@
   Shared <head> bits: colour scheme + preload of the two fonts every page
   renders above the fold (latin subsets only), so text doesn't flash from
   fallback → web font on first load. Render inside <head>.
+  Also inlines the cross-app transition driver (styles/lampham/transition.js),
+  which has to run before first paint.
 */
 import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import displayLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import transitionSrc from '../../styles/lampham/transition.js?raw';
+
+// Strip comments/indentation — it's inlined on every page.
+const transitionJs = transitionSrc.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\n\s*/g, '\n').trim();
 ---
 
 <meta name="color-scheme" content="dark" />
 <meta name="theme-color" content="#181926" />
 <link rel="preload" href={interLatin} as="font" type="font/woff2" crossorigin />
 <link rel="preload" href={displayLatin} as="font" type="font/woff2" crossorigin />
+<script is:inline set:html={transitionJs} />

@@ -4,7 +4,8 @@
   (Svelte twin: ../svelte/SuiteHeader.svelte — keep the markup in sync):
   LP mark → current app → app switcher + auth link.
   Plain HTML/CSS (styles in components.css); the switcher is a native
-  popover, so there's no client JS.
+  popover, so there's no client JS (data-lp-crumb is swapped
+  by the cross-app transition, see styles/lampham/transition.js).
 */
 import { SUITE_APPS, HOME_URL, APPS_HUB_URL, type SuiteAppId } from './suite';
 
@@ -37,7 +38,7 @@ const currentApp = SUITE_APPS.find((a) => a.id === current);
     <span class="lp-crumb-sep" aria-hidden="true">/</span>
     <a href={appHref} class="lp-crumb-app">
       <span class="lp-dot lp-dot-accent" aria-hidden="true"></span>
-      {currentApp?.label ?? current}
+      <span data-lp-crumb>{currentApp?.label ?? current}</span>
     </a>
 
     <div class="lp-suitebar-end">
