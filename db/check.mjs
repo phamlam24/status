@@ -7,6 +7,7 @@ const APPS = [
   { name: 'climb', url: 'https://climbing.lampham.space' },
   { name: 'learn', url: 'https://learn.lampham.space' },
   { name: 'sprout', url: 'https://sprout.lampham.space' },
+  { name: 'backlog', url: 'https://backlog.lampham.space' },
   { name: 'auth', url: 'https://auth.lampham.space' },
   { name: 'status', url: 'https://status.lampham.space' },
 ];

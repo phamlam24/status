@@ -18,6 +18,7 @@ export const MONITORED_APPS: MonitoredApp[] = [
   { name: 'climb', url: 'https://climbing.lampham.space', kind: 'app', public: true, repo: 'climbing-tracker' },
   { name: 'learn', url: 'https://learn.lampham.space', kind: 'app', public: false, repo: 'learn' },
   { name: 'sprout', url: 'https://sprout.lampham.space', kind: 'app', public: false, repo: 'sprout' },
+  { name: 'backlog', url: 'https://backlog.lampham.space', kind: 'app', public: false, repo: 'backlog' },
   { name: 'auth', url: 'https://auth.lampham.space', kind: 'service', public: false, repo: 'server-auth' },
   { name: 'status', url: 'https://status.lampham.space', kind: 'service', public: true, repo: 'status' },
 ];

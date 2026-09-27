@@ -108,3 +108,4 @@
 [data-app='sprout'] { --color-accent: var(--color-ctp-peach); }
 [data-app='learn']  { --color-accent: var(--color-ctp-sapphire); }
 [data-app='status'] { --color-accent: var(--color-ctp-teal); }
+[data-app='backlog'] { --color-accent: var(--color-ctp-lavender); }

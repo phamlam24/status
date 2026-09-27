@@ -8,6 +8,7 @@ const APPS = [
   { name: 'climb', repo: 'climbing-tracker' },
   { name: 'learn', repo: 'learn' },
   { name: 'sprout', repo: 'sprout' },
+  { name: 'backlog', repo: 'backlog' },
   { name: 'auth', repo: 'server-auth' },
   { name: 'status', repo: 'status' },
 ];

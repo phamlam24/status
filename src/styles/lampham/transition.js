@@ -11,7 +11,7 @@
   var html = document.documentElement;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var SUB = { '': 'home', climbing: 'climb', sprout: 'sprout', learn: 'learn', status: 'status', auth: 'auth' };
+  var SUB = { '': 'home', climbing: 'climb', sprout: 'sprout', learn: 'learn', status: 'status', auth: 'auth', backlog: 'backlog' };
 
   // localhost counts as the suite so local dev across ports gets the close/open (no accent morph).
   function isSuite(h) { return h === 'localhost' || h === '127.0.0.1' || h === 'lampham.space' || h.slice(-14) === '.lampham.space'; }
